@@ -1,0 +1,193 @@
+Interview 1
+
+Q1. Tell me/Provide a brief introduction about yourself?
+
+ANS. 
+
+
+Q2. Typicall day-to-day activities in life of a DevOps Engineer?
+
+ANS. 
+
+
+Q3. What is Kubernetes Pod and how it is different from a container?
+
+ANS. A Pod is the smallest deployable unit in Kubernetes. It's basically a wrapper around one or more containers that are meant to run together, whereas a container is a single packaged application with its own environment.
+
+Difference between Pod and container is packed with (storage, network, configurations) etc.,
+
+- Container: lowest unit in docker    Pod: lowest unit in kubernetes
+- Container: Don't share (storage, network, configurations) unless configured manually     Pod: Containers inside the same Pod share the same network (IP/port space) and can share volumes easily.
+
+
+Q4. What happens when a Pod dies in a kubernetes cluster?
+
+ANS. Pods are meant to be temporary. In Kubernetes if a pod dies it doesn’t fix a dead Pod. It simply creates a new one based on the Deployment or ReplicaSet configuration.
+
+SEQUENCE
+
+Pod stops running (crash, node issue, OOM, etc.).
+Kubelet reports to the control plane that the Pod is not healthy.
+The controller checks how many Pods should be running.
+If a Pod is missing, Kubernetes automatically creates a new Pod with the same specification.
+The new Pod gets a new Pod ID and usually a new IP address.
+
+
+Q5. Have you ever use deployment set and stateful set? explain with example.
+
+ANS. Yes, I have used Deployments and StatefulSets not in my work but in one of my project.
+
+Deployments are used when the Pods are identical and don’t need special identity or persistent storage. Even if all Pods die, Kubernetes can recreate them exactly the same. (ex: deploy a react frontend or .NET Core webAPI)
+StatefulSet is used when each Pod needs its own identity and storage. Even if a Pod dies, Kubernetes brings it back with the same name and same volume. (ex: deploy MySQL or MongoDB database)
+
+
+Q6. What are Readiness and Liveness Probes in Kubernetes?
+
+ANS. Kubernetes uses probes to check the health of containers.
+
+1. Liveness Probe
+
+The purpose is to check if the container is alive or stuck. If the liveness probe fails Kubernetes kills the container and restarts it.
+
+Example:
+app is running, but it got stuck in an infinite loop. Kubernetes restarts it automatically.
+
+2. Readiness Probe
+
+Purpose:
+To check if the container is ready to handle the requestes (incoming traffic). If the readiness probe fails Kubernetes removes the Pod from the Service load balancer
+
+Example scenario:
+App is starting up and needs time to load configuration.
+During this time, Kubernetes won’t send traffic to it.
+
+
+Q7. What is a sidecar container?
+
+ANS. A sidecar container is a helper container inside the same Pod that adds extra functionality like logging, monitoring, or proxying. It supports the main application container without changing its code
+
+
+Q8. Why do we use load balancers in the cloud?
+
+ANS. We use load balancers in the cloud to evenly distribute traffic across multiple servers, improve performance, increase availability, and automatically route around failures.
+
+
+Q9. Give me few examples where loadbalancer is not actually doing load balancing but few other things?
+
+ANS. A load balancer doesn’t always balances the load. Sometimes it acts as a 
+
+reverse proxy to simply forwarding traffic
+does SSL termination (decrypt HTTPS traffic before sending it to backend servers) 
+performs health checks (if there are multiple servers, if one is unhealthy, the LB will stop sending traffic to it)
+handles routing based on URLs
+blocks bad traffic (block unwanted traffic or enforce security rules)
+
+
+Q10. What exactly is DevOps?
+
+ANS. DevOps is about breaking the wall between developers and operations. It helps teams build, test, and release software faster by using automation, collaboration, and continuous delivery
+
+
+Q11. What are the key things needs to be taken care while provisioning and RDS or how to choose a database of choice?
+
+ANS. When provisioning an RDS or choosing a database, I'll look at the right engine based on application needs, instance size, storage type, high availability using Multi-AZ, backup retention, security settings, VPC placement, monitoring, and cost. These ensure the database is secure, scalable, and performant.
+
+
+Q12. SCENARION BASED: Let say the dev team ask you for a MySQL database to be provisioned and the team said 'I just want a relation MySQL database'. How would be the coversation go on from here so that you can come up with the database of which fullfill their requirement?
+
+ANS. When devs ask for a MySQL database, I don’t create it blindly. I ask about workload type, expected traffic, availability needs, storage, security, backups, engine version, and network access. Based on that, I choose the right RDS configuration with the correct instance type, Multi-AZ, storage, backup retention, and security groups. This ensures the database fits the business and technical requirements.
+
+
+Q13. Is it a good idea to have non-prod db little different from the prod database?
+
+ANS. Well, It’s important for non-prod to match production in terms of database engine, schema, parameter groups, and configuration. That ensures we catch issues early.
+But to save cost, it’s perfectly fine to use smaller instance types or cheaper storage in non-prod. So the functionality should match prod, but the capacity can be different.
+
+
+Q14. What is DevSecOps?
+
+ANS. DevSecOps is the practice of integrating security into every stage of DevOps. It shifts security left by adding automated security checks like code scanning, dependency scanning, container scanning, and secrets detection into CI/CD pipelines.
+
+
+Q15. What is the difference between git and github?
+
+ANS. Git is a version control tool used to track changes in code. GitHub is an online platform where Git repositories are hosted, shared, and collaboratively managed.
+
+
+Q16. What is a revers proxy? Explain with an example?
+
+ANS. A reverse proxy is a server that receives client requests and forwards them to backend servers. The client never knows the real server. We use it for security, load balancing, caching, SSL termination, and routing. A common example is using NGINX to route incoming traffic to multiple backend application servers.
+
+
+Q17. What is the different between availability zone and region?
+
+ANS. Region is a geographical area, while an Availability Zone is one or more data centers inside that region. Regions are far apart, AZs are close but isolated. We use multiple AZs for high availability.
+
+
+Q18. When should i go for a cross region deployment?
+
+ANS. We go for cross-region deployment when we need disaster recovery, global low-latency access, strict uptime requirements, or compliance. If the application must survive a full regional outage or serve users globally with minimal latency, then cross-region is the right choice
+
+
+Q19. How would you know if your terraform state and your infratructure is not in sync?
+
+ANS. You can know your Terraform state and infrastructure are out of sync by running terraform plan. If it shows unexpected changes—resources being created, deleted, or modified—it means there's drift. Drift usually happens when someone manually updates infrastructure outside of Terraform or when the state file is outdated.
+
+
+Q20. What is backend in terraform?
+
+ANS. Backend in Terraform is where the state file is stored and managed. Using a backend allows centralized state storage (not in local machine but in cloud), state locking, and team collaboration. Common backends include S3, Terraform Cloud, and Azure Blob Storage.
+
+
+Q21. What are datasources in terraform?
+
+ANS. Data sources in Terraform let you fetch information about existing resources or external systems. They don’t create anything — they only read. We use them to avoid hardcoding IDs and to integrate with existing infrastructure like VPCs, subnets, AMIs, secrets, etc
+
+
+Q22. Whst is SSL TLS? How to implement it?
+
+ANS. SSL and TLS are encryption protocols that secure communication between client and server. SSL is the older version and TLS is the modern, secure version used today. They make HTTPS possible by encrypting data, authenticating servers, and ensuring data integrity.
+
+To implement SSL/TLS, I first get a certificate from a Certificate Authority (like AWS ACM or Let's Encrypt). Then I verify domain ownership and install the certificate on the load balancer or web server. Next, I configure HTTPS listeners, enforce HTTP-to-HTTPS redirection, and test the setup. This ensures secure, encrypted communication.
+
+
+Q23. Difference between Cloud and Cloud Native?
+
+ANS. Cloud means hosting applications on cloud infrastructure, even if they were originally built for on-premise. Cloud-native means designing and building applications specifically to take advantage of cloud features like containers, microservices, auto-scaling, and managed services.
+
+
+Q24. If an application is running on Kubernetes — is it Cloud or Cloud-Native?
+
+ANS. An application running on Kubernetes is usually cloud-native because it uses containers, orchestration, auto-scaling, and modern deployment patterns. But simply running something on Kubernetes doesn’t automatically make it cloud-native — it must also follow cloud-native principles like microservices, stateless design, automation, and scalability.
+
+
+Q25. What is fail-fast in DevOps?
+
+ANS. Fail-fast in DevOps means catching problems as early as possible and stopping the process immediately when something goes wrong. It prevents broken code from moving forward, gives fast feedback, and improves quality and reliability.
+
+Scenario: CI Pipeline
+
+Developer pushes code > Unit tests run > One test fails
+
+👉 The pipeline stops immediately
+👉 Developer is notified
+👉 No deployment happens
+
+This prevents bad code from going to staging or production.
+
+If a container fails readiness or liveness checks, Kubernetes:
+
+stops routing traffic
+restarts it immediately
+
+This is also fail-fast behavior.
+
+
+Q26. How would you monitor Cloud-Native applications?
+
+ANS. I monitor cloud-native applications using metrics, logs, and tracing. I use Prometheus for metrics, EFK for logs, and OpenTelemetry/Jaeger for tracing. Then I create dashboards in Grafana and set alerts for Pod restarts, latency, and error rates. I also rely on Kubernetes health probes and sometimes service mesh metrics for deeper visibility.
+
+
+Q27. SCENARION BASED: Let say 3 of your EC2 instances has been terminated overnight. How would you debug the issue what might have happened?
+
+ANS. To debug why EC2 instances terminated overnight, I first check CloudTrail to see who or what initiated the termination — that usually points to the root cause. Then I check Auto Scaling Group events, Spot interruption notices, and EC2 status checks for hardware or capacity issues. I also verify automation pipelines, Lambda scripts, or scheduled actions that might have terminated the instances. Finally, I review system logs and investigate any recent infrastructure changes. This structured approach helps identify whether the cause was auto-scaling, spot interruption, manual action, automation, or AWS failure.
